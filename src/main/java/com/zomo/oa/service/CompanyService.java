@@ -11,4 +11,5 @@ public interface CompanyService {
     ServiceResponse<String> update(Company company);
     ServiceResponse<String> delete(Integer id);
     ServiceResponse<List<Company>> searchKeyword(String keyWords);
+    ServiceResponse<Company> findOne(Integer id);
 }

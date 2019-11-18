@@ -1,14 +1,13 @@
 package com.zomo.oa.controller;
 
-
-import com.zomo.oa.pojo.Company;
-import com.zomo.oa.pojo.Customer;
+import com.zomo.oa.pojo.Project;
 import com.zomo.oa.pojo.User;
-import com.zomo.oa.service.CompanyService;
+import com.zomo.oa.service.ProjectService;
 import com.zomo.oa.util.Const;
 import com.zomo.oa.util.ResponseCode;
 import com.zomo.oa.util.ServiceResponse;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RestController;
@@ -17,58 +16,71 @@ import javax.servlet.http.HttpSession;
 import java.util.List;
 
 @RestController
-@RequestMapping(value = "company/")
-public class CompanyController {
+@RequestMapping(value = "project/")
+public class ProjectController {
     @Autowired
-    private CompanyService companyService;
+    private ProjectService projectService;
 
     @RequestMapping(value = "findAll",method = RequestMethod.GET)
-    public ServiceResponse<List<Company>> findAll(HttpSession session){
+    public ServiceResponse<List<Project>> findAll(HttpSession session){
         User user= (User) session.getAttribute(Const.CURRENT_USER);
-        if (user==null)
+        if (user == null) {
             return ServiceResponse.createByErrorCodeMsg(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getMsg());
-        return companyService.findAll();
+        }
+        return projectService.findAllOnline();
+
     }
 
+    @RequestMapping(value = "findOne",method = RequestMethod.POST)
+    public ServiceResponse<Project> findOne(HttpSession session,String id){
+        User user= (User) session.getAttribute(Const.CURRENT_USER);
+        if (user == null) {
+            return ServiceResponse.createByErrorCodeMsg(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getMsg());
+        }
+        return projectService.findOne(id);
+
+    }
 
     @RequestMapping(value = "add",method = RequestMethod.POST)
-    public ServiceResponse<String> add(HttpSession session,Company company){
+    public ServiceResponse<String> add(HttpSession session,Project project){
         User user= (User) session.getAttribute(Const.CURRENT_USER);
-        if (user==null)
+        if (user == null) {
             return ServiceResponse.createByErrorCodeMsg(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getMsg());
-        return companyService.addOne(company);
-    }
+        }
+        project.setCreateUserId(user.getId());
+        project.setProjectStatusId(Const.INIT_PROJECT_STATUS_ID);
+        return projectService.add(project);
 
-    @RequestMapping(value = "delete",method = RequestMethod.GET)
-    public ServiceResponse<String> delete(HttpSession session,Integer id){
-        User user= (User) session.getAttribute(Const.CURRENT_USER);
-        if (user==null)
-            return ServiceResponse.createByErrorCodeMsg(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getMsg());
-        return companyService.delete(id);
     }
 
     @RequestMapping(value = "update",method = RequestMethod.POST)
-    public ServiceResponse<String> update(HttpSession session,Company company){
+    public ServiceResponse<String> update(HttpSession session,Project project){
         User user= (User) session.getAttribute(Const.CURRENT_USER);
-        if (user==null)
+        if (user == null) {
             return ServiceResponse.createByErrorCodeMsg(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getMsg());
-        return companyService.update(company);
+        }
+        return projectService.update(project);
+
     }
 
-    @RequestMapping(value = "search",method = RequestMethod.GET)
-    public ServiceResponse<List<Company>> search(HttpSession session,String keyWord){
+    @RequestMapping(value = "delete",method = RequestMethod.POST)
+    public ServiceResponse<String> delete(HttpSession session,String id){
         User user= (User) session.getAttribute(Const.CURRENT_USER);
-        if (user==null)
+        if (user == null) {
             return ServiceResponse.createByErrorCodeMsg(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getMsg());
-        return companyService.searchKeyword(keyWord);
+        }
+        return projectService.delete(id);
+
     }
 
-    @RequestMapping(value = "findOne",method = RequestMethod.GET)
-    public ServiceResponse<Company> findOne(HttpSession session,Integer id){
+    @RequestMapping(value = "offLine",method = RequestMethod.POST)
+    public ServiceResponse<String> offLine(HttpSession session,String id){
         User user= (User) session.getAttribute(Const.CURRENT_USER);
-        if (user==null)
+        if (user == null) {
             return ServiceResponse.createByErrorCodeMsg(ResponseCode.NEED_LOGIN.getCode(),ResponseCode.NEED_LOGIN.getMsg());
-        return companyService.findOne(id);
+        }
+        return projectService.offline(id);
+
     }
 
 

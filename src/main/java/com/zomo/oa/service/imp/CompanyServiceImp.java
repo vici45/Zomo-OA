@@ -63,5 +63,14 @@ public class CompanyServiceImp implements CompanyService {
         return ServiceResponse.createBySuccess(companyRepository.findByNameLike("%"+keyWords+"%"));
     }
 
+    @Override
+    public ServiceResponse<Company> findOne(Integer id) {
+        Company company=companyRepository.findOne(id);
+        if (company == null) {
+            return ServiceResponse.createByErrorMsg("公司id错误");
+        }
+        return ServiceResponse.createBySuccess(company);
+    }
+
 
 }
