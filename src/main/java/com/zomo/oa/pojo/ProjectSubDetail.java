@@ -14,6 +14,7 @@ public class ProjectSubDetail {
     @Id
     @GeneratedValue
     private Integer id;
+    private Integer projectSubId;
     private Integer content;
     private String description;
     private Integer quantity;
